@@ -11,12 +11,18 @@ var keepAlive = true
 
 func New() {
 	gorilla.NewServer()
-	gorilla.AddListener(new(ingress))
+
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.ServerStart("localhost:8080", 15, 15)))
-	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/ping", gorilla.PingHandler)))
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/ingress", IngressHandler)))
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/shutdown", ShutdownHandler)))
 
+	intialTestAndInstrutions()
+
+	go doKeepAlive()
+
+}
+
+func intialTestAndInstrutions() {
 	log.Println("Testing ping on loclahost:8080")
 	resp, err := http.Get("http://localhost:8080/ping")
 	log.Println(err)
@@ -25,9 +31,6 @@ func New() {
 	log.Println("localhost:8080/ping")
 	log.Println("localhost:8080/ingress")
 	log.Println("localhost:8080/shutdown")
-
-	go doKeepAlive()
-
 }
 
 func doKeepAlive() {
@@ -36,15 +39,6 @@ func doKeepAlive() {
 	log.Println("Shutdown")
 	os.Exit(0)
 
-}
-
-type ingress struct{}
-
-// Note the OnEvent is not likely to be used...Here for testing...
-func (i *ingress) OnEvent(eventChannel <-chan gorilla.Event) {
-	for evt := range eventChannel {
-		log.Println("Received event: ", evt)
-	}
 }
 
 var IngressHandler = func(w http.ResponseWriter, r *http.Request) {
