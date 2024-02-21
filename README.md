@@ -1,2 +1,2 @@
-# sample
-Sample connecting Gorilla to SQLite
+# samples
+Samples projects for different variations of the projects
