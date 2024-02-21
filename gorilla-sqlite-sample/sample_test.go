@@ -3,25 +3,24 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/hexades/sample/app"
-	"github.com/hexades/sample/app/models"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSampleSuite(t *testing.T) {
 	_ = os.Remove("sample_sqlite.db")
-	go app.New()
+	go main()
 
 	resp, err := http.Get("http://localhost:8080/ping")
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	log.Println(resp.StatusCode)
 
-	member := &models.Member{
+	member := &Member{
 		MemberId: "0",
 		First:    "Fool",
 		Last:     "Hardy",
@@ -43,7 +42,7 @@ func TestSampleSuite(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 
-	m := &models.Member{}
+	m := &Member{}
 	json.NewDecoder(resp.Body).Decode(m)
 
 	assert.Equal(t, member, m)

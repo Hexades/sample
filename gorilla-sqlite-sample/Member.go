@@ -1,5 +1,4 @@
-package models
-
+package main
 type Member struct {
 	//gorm.Model
 	MemberId string `gorm:"primaryKey" json:"member_id"`
