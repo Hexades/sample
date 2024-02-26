@@ -13,8 +13,6 @@ import (
 )
 
 func main() {
-	sqlite.NewRepository()
-	sqlite.SendEvent(sqlite.NewEvent("sample_sqlite.db", sqlite.BasicOpenFunc))
 
 	gorilla.NewServer()
 
@@ -23,6 +21,9 @@ func main() {
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/member", InsertMemberHandler)))
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/shutdown", ShutdownHandler)))
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/ping", gorilla.PingHandler)))
+
+	sqlite.NewRepository()
+	sqlite.SendEvent(sqlite.NewEvent("sample_sqlite.db", sqlite.BasicOpenFunc))
 
 	go doKeepAlive()
 

@@ -7,18 +7,21 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestSampleSuite(t *testing.T) {
-	_ = os.Remove("sample_sqlite.db")
 	go main()
-
+	_ = os.Remove("sample_sqlite.db")
+	//wait for setup complete...
+	time.Sleep(8 * time.Second)
 	resp, err := http.Get("http://localhost:8080/ping")
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 	log.Println(resp.StatusCode)
+	assert.NotEqual(t, resp.StatusCode, 404)
 
 	member := &Member{
 		MemberId: "0",
