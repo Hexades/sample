@@ -25,7 +25,8 @@ func main() {
 	sqlite.NewRepository()
 	sqlite.SendEvent(sqlite.NewEvent("sample_sqlite.db", sqlite.BasicOpenFunc))
 
-	go doKeepAlive()
+	//TODO add signals for alive and quit.
+	doKeepAlive()
 
 }
 
