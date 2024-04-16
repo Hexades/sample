@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"reflect"
-
-	"github.com/hexades/sqlite"
 
 	"github.com/gorilla/mux"
 	"github.com/hexades/gorilla"
+
+	"github.com/hexades/samples/gorilla-sqlite-sample/models"
+	orm "github.com/hexades/samples/gorilla-sqlite-sample/sqlite-orm"
 )
 
 func main() {
@@ -22,28 +22,11 @@ func main() {
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/shutdown", ShutdownHandler)))
 	gorilla.SendEvent(gorilla.NewEvent(gorilla.HandlerFunc("/ping", gorilla.PingHandler)))
 
-	sqlite.NewRepository()
-	sqlite.SendEvent(sqlite.NewEvent("sample_sqlite.db", sqlite.BasicOpenFunc))
+	orm.NewRepository()
 
 	//TODO add signals for alive and quit.
 	doKeepAlive()
 
-}
-
-func GetMember(member *Member) error {
-	evt := sqlite.NewEvent(member, sqlite.ReadFirstFunc)
-	sqlite.SendEvent(evt)
-	response := evt.Receive()
-	log.Println(reflect.TypeOf(response.Value))
-	return response.Err
-}
-
-func Insert(member *Member) error {
-	evt := sqlite.NewEvent(member, sqlite.BasicInsertFunc)
-	log.Println("Sending insert: :", evt)
-	sqlite.SendEvent(evt)
-	response := evt.Receive()
-	return response.Err
 }
 
 var keepAlive = true
@@ -57,8 +40,8 @@ func doKeepAlive() {
 
 var GetMemberHandler = func(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
-	m := &Member{MemberId: id}
-	err := GetMember(m)
+	m := &models.Member{MemberId: id}
+	err := orm.GetMember(m)
 	if err == nil {
 		bytes, _ := json.Marshal(m)
 		w.Write(bytes)
@@ -69,10 +52,10 @@ var GetMemberHandler = func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 var InsertMemberHandler = func(w http.ResponseWriter, r *http.Request) {
-	m := &Member{}
+	m := &models.Member{}
 	json.NewDecoder(r.Body).Decode(m)
 	log.Println("Decoded: ", m)
-	err := Insert(m)
+	err := orm.Insert(m)
 	if err == nil {
 		bytes, _ := json.Marshal(m)
 		w.Write(bytes)

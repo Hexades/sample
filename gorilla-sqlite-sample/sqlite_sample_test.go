@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hexades/samples/gorilla-sqlite-sample/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,7 +24,7 @@ func TestSampleSuite(t *testing.T) {
 	log.Println(resp.StatusCode)
 	assert.NotEqual(t, resp.StatusCode, 404)
 
-	member := &Member{
+	member := &models.Member{
 		MemberId: "0",
 		First:    "Fool",
 		Last:     "Hardy",
@@ -45,7 +46,7 @@ func TestSampleSuite(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)
 
-	m := &Member{}
+	m := &models.Member{}
 	json.NewDecoder(resp.Body).Decode(m)
 
 	assert.Equal(t, member, m)
